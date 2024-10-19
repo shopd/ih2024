@@ -151,12 +151,12 @@ import {
   // console.log(
   //   "Please navigate to the following URL, to accept the interaction from the sending wallet:"
   // );
-  console.log({
-    "Redirect": outgoingPaymentGrant.interact.redirect,
+  console.log(JSON.stringify({
+    "RedirectURL": outgoingPaymentGrant.interact.redirect,
     "ContinueURI": outgoingPaymentGrant.continue.uri,
     "AccessToken": outgoingPaymentGrant.continue.access_token.value,
     "QuoteID": quote.id,
-  });
+  }));
 
   process.exit(0);
 })();

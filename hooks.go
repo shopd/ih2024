@@ -19,21 +19,17 @@ func (ph *Handler) PaymentRedirect(params share.PaymentRedirectParams) (
 	if err != nil {
 		return redirectURL, err
 	}
-	co, err := ph.NewRedirect(NewRedirectParams{
-		InWalletAddressURL:  ph.conf.Ih2024InWalletAddressUrl(),
-		OutWalletAddressURL: ph.conf.Ih2024OutWalletAddressUrl(),
-		KeyID:               ph.conf.Ih2024KeyId(),
-		PrivateKey:          ph.conf.Ih2024PrivateKey(),
-		SuccessURL:          params.SuccessURL,
-		Nonce:               nonce,
-		Amount:              params.Order.Totals.Subtotal.Int64,
-		// TODO For now just use wallet currency
+	redirect, err := ph.NewRedirect(NewRedirectParams{
+		SuccessURL: params.SuccessURL,
+		Nonce:      nonce,
+		Amount:     params.Order.Totals.Subtotal.Int64,
+		// TODO For now just default to wallet currency
 		// Currency:   params.Currency,
 	})
 	if err != nil {
 		return redirectURL, err
 	}
-	redirectURL, err = url.Parse(co.RedirectURL)
+	redirectURL, err = url.Parse(redirect.RedirectURL)
 	if err != nil {
 		return redirectURL, errors.WithStack(err)
 	}

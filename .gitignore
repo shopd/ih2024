@@ -3,3 +3,6 @@
 /.env.dev-nutrient-nurseries-shopd-link.sh
 /cgi/node_modules
 /cgi/pnpm-lock.yaml
+/redirect.json
+/node_modules
+/pnpm-lock.yaml

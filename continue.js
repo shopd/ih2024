@@ -31,9 +31,9 @@ import {
     });
   } catch (err) {
     if (err instanceof OpenPaymentsClientError) {
-      console.log({
+      console.log(JSON.stringify({
         "Message": grantContinuationErrorMessage,
-      });
+      }));
       process.exit(1);
     }
 
@@ -41,9 +41,9 @@ import {
   }
 
   if (!isFinalizedGrant(finalizedOutgoingPaymentGrant)) {
-    console.log({
+    console.log(JSON.stringify({
       "Message": "There was an error continuing the grant. You probably have not accepted the grant at the url.",
-    });
+    }));
     process.exit(1);
   }
 
@@ -69,8 +69,8 @@ import {
   //   "\nStep 7: Created outgoing payment. Funds will now move from the outgoing payment to the incoming payment.",
   //   outgoingPayment
   // );
-  console.log({
+  console.log(JSON.stringify({
     "Message": "Created outgoing payment",
-  });
+  }));
   process.exit(0);
 })();
