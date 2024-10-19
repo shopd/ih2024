@@ -1,3 +1,5 @@
 /_excluded
 /*.key
 /.env.dev-nutrient-nurseries-shopd-link.sh
+/cgi/node_modules
+/cgi/pnpm-lock.yaml
