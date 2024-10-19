@@ -1,8 +1,8 @@
-# Static e-commerce payment
+# Open Payments plugin for shopd
 
-Submission for Interledger Hackathon 2024
+Submission for [Interledger Hackathon 2024](https://interledger.org/summit/hackathon)
 
-[Interledger Hackathon 2024](https://interledger.org/summit/hackathon)
+Implement an Open Payments plugin for [shopd](https://shopd.link/)
 
 
 ## Instructions
