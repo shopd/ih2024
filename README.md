@@ -2,7 +2,9 @@
 
 Submission for [Interledger Hackathon 2024](https://interledger.org/summit/hackathon)
 
-Implement an Open Payments plugin for [shopd](https://shopd.link/)
+Implement an Open Payments plugin for [shopd](https://shopd.link/): *"Hugo compatible e-commerce plugin for the Caddy Web Server"*
+
+Makes use of refactored **open-payments-example** with two step interaction for [Payment Redirect with Open Payments API](https://github.com/mozey/open-payments-example)
 
 
 ## Instructions
@@ -73,5 +75,3 @@ Use these instead
 ### Examples
 
 [Interactive payment example](https://github.com/interledger/open-payments-example)
-
-Refactor two step interaction for [Payment Redirect with Open Payments API](https://github.com/mozey/open-payments-example)
