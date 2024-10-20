@@ -39,3 +39,5 @@ Watch the [demo video](https://youtu.be/C4_YlobWVJQ)
 ## TODO
 
 - Sleep zzz
+
+PS. If anyone would like to help me get shopd to beta version so I can release it, please visit the site link above and "Join Waiting List"
