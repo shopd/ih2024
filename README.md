@@ -33,11 +33,9 @@ See `2024-10-20 Interledger Hackathon.pdf`
 
 This repo is a submodule, running the Go code requires a working shopd dev environment.
 
-Watch the [demo video]()
+Watch the [demo video](https://youtu.be/C4_YlobWVJQ)
 
 
 ## TODO
 
-- Check plugin works with shopd
-- Record demo video
 - Sleep zzz
