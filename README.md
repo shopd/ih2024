@@ -31,7 +31,7 @@ For this demo the `ContinueGrant` func confirm the order. Usually `ProcessMsg` w
 
 ## Slides
 
-See `2024-10-20 Interledger Hackathon.pdf`
+See [2024-10-20 Interledger Hackathon.pdf](https://github.com/shopd/ih2024/blob/main/2024-10-20%20Interledger%20Hackathon.pdf)
 
 
 ## Demo
