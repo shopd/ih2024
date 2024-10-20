@@ -1,6 +1,7 @@
 package ih2024
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"os/exec"
@@ -8,6 +9,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 	"github.com/shopd/shopd/go/fileutil"
+	"github.com/shopd/shopd/go/model"
 )
 
 type Redirect struct {
@@ -15,8 +17,10 @@ type Redirect struct {
 	ContinueURI string
 	AccessToken string
 	QuoteID     string
-	Amount      int64
-	OrderID     string
+}
+
+type Continue struct {
+	Message string
 }
 
 type NewRedirectParams struct {
@@ -24,15 +28,20 @@ type NewRedirectParams struct {
 	Nonce      string
 	Amount     int64
 	OrderID    string
+	OrderNo    string
 }
 
-// paymentMetaData file name.
+// paymentRedirect meta data file name.
 // In prod the payment meta data must be stored in the order_config table
-const paymentMetaData = "redirect.json"
+const paymentRedirect = "redirect.json"
 
-// paymentResult file name.
+// paymentParams meta data file name.
 // In prod this would also be stored on a config table
-const paymentResult = "continue.json"
+const paymentParams = "params.json"
+
+// paymentContinue meta data file name.
+// In prod this would also be stored on a config table
+const paymentContinue = "continue.json"
 
 func (ph *Handler) NewRedirect(params NewRedirectParams) (redirect *Redirect, err error) {
 	inWalletAddressURL := ph.conf.Ih2024InWalletAddressUrl()
@@ -62,12 +71,26 @@ func (ph *Handler) NewRedirect(params NewRedirectParams) (redirect *Redirect, er
 		log.Error().Str("out", string(out)).Msg("")
 		return redirect, errors.WithStack(err)
 	}
+
 	err = json.Unmarshal(out, &redirect)
 	if err != nil {
 		log.Error().Str("out", string(out)).Msg("")
 		return redirect, errors.WithStack(err)
 	}
-	err = fileutil.WriteBytes(paymentMetaData, out)
+
+	// Don't unmarshal before writing,
+	// something weird happening with escape chars
+	err = fileutil.WriteBytes(paymentRedirect, out)
+	if err != nil {
+		return redirect, errors.WithStack(err)
+	}
+
+	// Write params to file
+	b, err := json.Marshal(params)
+	if err != nil {
+		return redirect, errors.WithStack(err)
+	}
+	err = fileutil.WriteBytes(paymentParams, b)
 	if err != nil {
 		return redirect, errors.WithStack(err)
 	}
@@ -77,8 +100,9 @@ func (ph *Handler) NewRedirect(params NewRedirectParams) (redirect *Redirect, er
 
 // ContinueGrant func for hackathon demo...
 func (ph *Handler) ContinueGrant() (redirect *Redirect, err error) {
+	// ...........................................................................
 	// Read payment meta data written to file by NewRedirect
-	b, err := fileutil.ReadAll(paymentMetaData)
+	b, err := fileutil.ReadAll(paymentRedirect)
 	if err != nil {
 		return redirect, err
 	}
@@ -86,6 +110,21 @@ func (ph *Handler) ContinueGrant() (redirect *Redirect, err error) {
 	if err != nil {
 		return redirect, errors.WithStack(err)
 	}
+	log.Debug().Interface("redirect", redirect).Msg("")
+
+	b, err = fileutil.ReadAll(paymentParams)
+	if err != nil {
+		return redirect, err
+	}
+	var params NewRedirectParams
+	err = json.Unmarshal(b, &params)
+	if err != nil {
+		return redirect, errors.WithStack(err)
+	}
+	log.Debug().Interface("params", params).Msg("")
+
+	// ...........................................................................
+	// Continue grant
 
 	inWalletAddressURL := ph.conf.Ih2024InWalletAddressUrl()
 	// TODO outWalletAddressURL should be provided by the customer after selecting payment method
@@ -114,15 +153,65 @@ func (ph *Handler) ContinueGrant() (redirect *Redirect, err error) {
 		log.Error().Str("out", string(out)).Msg("")
 		return redirect, errors.WithStack(err)
 	}
-	err = json.Unmarshal(out, &redirect)
+
+	var cont Continue
+	err = json.Unmarshal(out, &cont)
 	if err != nil {
 		log.Error().Str("out", string(out)).Msg("")
 		return redirect, errors.WithStack(err)
 	}
-	err = fileutil.WriteBytes(paymentMetaData, out)
+	err = fileutil.WriteBytes(paymentContinue, out)
 	if err != nil {
 		return redirect, errors.WithStack(err)
 	}
+
+	// ...........................................................................
+	// Confirm order
+
+	qx, err := ph.s.DomainQX(context.Background())
+	if err != nil {
+		return redirect, err
+	}
+
+	orders, err := model.NewOrders(qx.QX, model.OrdersByOrderNo(params.OrderNo))
+	if err != nil {
+		return redirect, err
+	}
+	if len(orders) != 1 {
+		return redirect, ErrOrderNo(params.OrderNo)
+	}
+	order := orders[0]
+
+	// Save the transaction and link order
+	err = model.SaveOrderTransaction(qx.QX, model.SaveOrderTransactionParams{
+		OrderID: order.OrderID.String,
+		UserID:  order.UserID.String,
+		Amount:  params.Amount,
+		Descr:   "Interledger Hackathon 2024",
+	})
+	if err != nil {
+		return redirect, err
+	}
+
+	// TODO Skipping this check for Hackathon demo
+	// Paid in full?
+	// Use go-money everywhere money calculations are done,
+	// even though the int64 values could be compared directly,
+	// makes it easier to search for code like this
+	// tranAmount := money.New(
+	// 	redirect.Amount, qx.DomainConfig.Currency())
+	// orderTotal := money.New(
+	// 	order.Totals.Total.Int64, qx.DomainConfig.Currency())
+	// paid, err := tranAmount.GreaterThanOrEqual(orderTotal)
+	// if err != nil {
+	// 	return redirect, err
+	// }
+
+	// Confirm order
+	order.Confirm(qx.QX, model.OrderConfirmParams{
+		ModID: model.SystemUserID,
+		Paid:  true,
+	})
 
 	return redirect, nil
 }

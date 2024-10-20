@@ -4,5 +4,8 @@
 /cgi/node_modules
 /cgi/pnpm-lock.yaml
 /redirect.json
+/continue.json
+/params.json
 /node_modules
 /pnpm-lock.yaml
+.DS_Store

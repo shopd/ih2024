@@ -27,6 +27,8 @@ func TestNewRedirect(t *testing.T) {
 		SuccessURL: "",
 		Nonce:      nonce,
 		Amount:     1000,
+		OrderID:    "2nfp6UcSPaCwrqPYfq3OMPEBTTZ",
+		OrderNo:    "000010",
 	})
 	is.NoErr(err)
 
