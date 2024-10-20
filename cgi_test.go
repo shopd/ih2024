@@ -32,3 +32,18 @@ func TestNewRedirect(t *testing.T) {
 
 	log.Info().Interface("redirect", redirect).Msg("")
 }
+
+// Run this test from shopd APP_DIR like this:
+//
+//	go clean -testcache && gotest -v ./go/plugin/ih2024/... -run TestContinueGrant
+func TestContinueGrant(t *testing.T) {
+	is, _, ps := testutil.SetupPluginServices(t)
+
+	pConf := config.New()
+	ph := ih2024.New(pConf, ps)
+
+	redirect, err := ph.ContinueGrant()
+	is.NoErr(err)
+
+	log.Info().Interface("redirect", redirect).Msg("")
+}

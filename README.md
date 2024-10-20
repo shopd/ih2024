@@ -21,12 +21,19 @@ These script are executed from the Go plugin, see `cgi.go`
 
 The plugin implements the `PaymentRedirect` interface in `hooks.go`
 
-The `ContinueGrant` func calls `ProcessMsg`. Usually the message handler listens for webhooks. For this demo the continuation is done manually after the customer interaction
+The `ContinueGrant` func calls `ProcessMsg`. Usually the message handler listens for webhooks. For this demo the continuation is done manually after the customer interaction.
+
+
+## Slides
+
+See `2024-10-20 Interledger Hackathon.pdf`
 
 
 ## Demo
 
-Link to demo video here...
+This repo is a submodule, running the Go code requires a working shopd dev environment.
+
+Watch the [demo video]()
 
 
 ## TODO
