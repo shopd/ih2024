@@ -25,6 +25,8 @@ func (ph *Handler) PaymentRedirect(params share.PaymentRedirectParams) (
 		Amount:     params.Order.Totals.Subtotal.Int64,
 		// TODO For now just default to wallet currency
 		// Currency:   params.Currency,
+		OrderID: params.Order.OrderID.String,
+		OrderNo: params.Order.OrderNo.String,
 	})
 	if err != nil {
 		return redirectURL, err
