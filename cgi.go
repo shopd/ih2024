@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os/exec"
+	"path/filepath"
 
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
@@ -65,6 +66,8 @@ func (ph *Handler) NewRedirect(params NewRedirectParams) (redirect *Redirect, er
 		cmd.Env, fmt.Sprintf("APP_IH2024_NONCE=%s", params.Nonce))
 	cmd.Env = append(
 		cmd.Env, fmt.Sprintf("APP_IH2024_AMOUNT=%d", params.Amount))
+	dir := filepath.Join(ph.conf.Dir(), "go", "plugin", "ih2024")
+	cmd.Dir = dir
 
 	out, err := cmd.CombinedOutput()
 	if err != nil {
@@ -80,7 +83,7 @@ func (ph *Handler) NewRedirect(params NewRedirectParams) (redirect *Redirect, er
 
 	// Don't unmarshal before writing,
 	// something weird happening with escape chars
-	err = fileutil.WriteBytes(paymentRedirect, out)
+	err = fileutil.WriteBytes(filepath.Join(dir, paymentRedirect), out)
 	if err != nil {
 		return redirect, errors.WithStack(err)
 	}
@@ -90,7 +93,7 @@ func (ph *Handler) NewRedirect(params NewRedirectParams) (redirect *Redirect, er
 	if err != nil {
 		return redirect, errors.WithStack(err)
 	}
-	err = fileutil.WriteBytes(paymentParams, b)
+	err = fileutil.WriteBytes(filepath.Join(dir, paymentParams), b)
 	if err != nil {
 		return redirect, errors.WithStack(err)
 	}
@@ -102,7 +105,8 @@ func (ph *Handler) NewRedirect(params NewRedirectParams) (redirect *Redirect, er
 func (ph *Handler) ContinueGrant() (redirect *Redirect, err error) {
 	// ...........................................................................
 	// Read payment meta data written to file by NewRedirect
-	b, err := fileutil.ReadAll(paymentRedirect)
+	dir := filepath.Join(ph.conf.Dir(), "go", "plugin", "ih2024")
+	b, err := fileutil.ReadAll(filepath.Join(dir, paymentRedirect))
 	if err != nil {
 		return redirect, err
 	}
@@ -147,6 +151,7 @@ func (ph *Handler) ContinueGrant() (redirect *Redirect, err error) {
 		cmd.Env, fmt.Sprintf("APP_IH2024_CONTINUE_ACCESS_TOKEN=%s", redirect.AccessToken))
 	cmd.Env = append(
 		cmd.Env, fmt.Sprintf("APP_IH2024_QUOTE_ID=%s", redirect.QuoteID))
+	cmd.Dir = dir
 
 	out, err := cmd.CombinedOutput()
 	if err != nil {
@@ -160,7 +165,7 @@ func (ph *Handler) ContinueGrant() (redirect *Redirect, err error) {
 		log.Error().Str("out", string(out)).Msg("")
 		return redirect, errors.WithStack(err)
 	}
-	err = fileutil.WriteBytes(paymentContinue, out)
+	err = fileutil.WriteBytes(filepath.Join(dir, paymentContinue), out)
 	if err != nil {
 		return redirect, errors.WithStack(err)
 	}
