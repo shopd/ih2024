@@ -3,7 +3,11 @@
 Submission for [Interledger Hackathon 2024](https://interledger.org/summit/hackathon)
 
 Implement an Open Payments plugin for [shopd](https://shopd.link/): *"Hugo compatible e-commerce plugin for the Caddy Web Server"*
-
+- Mostly static e-commerce (one executable plus static site and DB files)
+- RESTful Hypermedia API ([HATEOAS](https://htmx.org/))
+- Hugo shortcodes are the application entry points
+- Self-hostable and platform independent
+- Open Payments continues this theme of empowering the user and conforming to web standards. It allows *"small merchants, to use payment initiation APIs directly against their customers’ payment accounts"* and *"improves upon existing Open Banking standards as defined in the UK, EU, and other jurisdictions"*
 
 # cgi
 
@@ -11,17 +15,18 @@ Makes use of refactored **open-payments-example** (interactive grant) for [Payme
 ```bash
 # Install node modules
 pnpm install
-# Start interactive grant
+# Start interactive grant,
+# redirect and wait for user interaction
 node redirect.js
 # Continue grant
 node continue.js
 ```
 
-These script are executed from the Go plugin, see `cgi.go`
+These scripts are called from the Go plugin, see `cgi.go`
 
 The plugin implements the `PaymentRedirect` interface in `hooks.go`
 
-The `ContinueGrant` func calls `ProcessMsg`. Usually the message handler listens for webhooks. For this demo the continuation is done manually after the customer interaction.
+For this demo the `ContinueGrant` func confirm the order. Usually `ProcessMsg` would subscribe to webhook events. Usually the message handler listens for webhooks. For this demo the continuation is done manually after the customer interaction.
 
 
 ## Slides
@@ -35,9 +40,4 @@ This repo is a submodule, running the Go code requires a working shopd dev envir
 
 Watch the [demo video](https://youtu.be/C4_YlobWVJQ)
 
-
-## TODO
-
-- Sleep zzz
-
-PS. If anyone would like to help me get shopd to beta version so I can release it, please visit the site link above and "Join Waiting List"
+PS. If anyone would like to collaborate on the shopd beta release, please visit the site link above and click *"Join Waiting List"*
