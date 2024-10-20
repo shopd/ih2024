@@ -38,9 +38,6 @@ Watch the [demo video]()
 
 ## TODO
 
-x Create shopd plugin (refactor existing yoco implementation)
-x Implement PaymentRedirect hook
-- Run commands for CGI scripts
 - Check plugin works with shopd
 - Record demo video
 - Sleep zzz
