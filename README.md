@@ -4,10 +4,10 @@ Submission for [Interledger Hackathon 2024](https://interledger.org/summit/hacka
 
 Implement an Open Payments plugin for [shopd](https://shopd.link/): *"Hugo compatible e-commerce plugin for the Caddy Web Server"*
 - Mostly static e-commerce (one executable plus static site and DB files)
-- RESTful Hypermedia API ([HATEOAS](https://htmx.org/))
-- Hugo shortcodes are the application entry points
-- Self-hostable and platform independent
-- Open Payments continues this theme of empowering the user and conforming to web standards. It allows *"small merchants, to use payment initiation APIs directly against their customers’ payment accounts"* and *"improves upon existing Open Banking standards as defined in the UK, EU, and other jurisdictions"*
+- [Hugo](https://gohugo.io/) shortcodes are the application entry points
+- RESTful Hypermedia API (HATEOAS with [htmx](https://htmx.org/))
+- Self-hostable and platform independent by making use of [Caddy](https://caddyserver.com/)
+- [Open Payments](https://openpayments.dev/) continues this theme of empowering the user and conforming to web standards. It allows *"small merchants, to use payment initiation APIs directly against their customers’ payment accounts"* and *"improves upon existing Open Banking standards as defined in the UK, EU, and other jurisdictions"*
 
 # cgi
 
